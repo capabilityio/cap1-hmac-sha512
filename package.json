@@ -1,6 +1,6 @@
 {
     "name": "cap1-hmac-sha512",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Signature Version 1 signing process, specification, and reference implementation",
     "scripts": {
         "assert-latest-node": "(node -v | grep -q ${npm_package_scriptvars_latest_node}) || (echo \"Expected node version ${npm_package_scriptvars_latest_node}, got $(node -v)\" && exit 1)",
