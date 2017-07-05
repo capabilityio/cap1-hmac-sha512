@@ -43,6 +43,14 @@ it("throws if cannot find Host header", () =>
     }
 );
 
+it("does not throw if params.queryString is null", () =>
+    {
+        const params = clone(VALID_PARAMS);
+        params.queryString = null;
+        expect(() => cap1HmacSha512.sign(params)).not.toThrow();
+    }
+);
+
 describe("result", () =>
 {
     it("includes algorithm", () =>

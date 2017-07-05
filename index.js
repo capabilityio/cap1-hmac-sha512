@@ -31,6 +31,7 @@ const createCanonicalHeaders = headers =>
 };
 
 const createCanonicalQueryString = queryString => (
+    (queryString = queryString || "") &&
     queryString.split("&")
         .sort()
         .map(pair => pair.split("="))
