@@ -160,5 +160,44 @@ describe("result", () =>
                 );
             }
         );
+        it("request matches signature", done =>
+            {
+                const signature = cap1HmacSha512.sign(
+                    {
+                        headers:
+                        {
+                            host: "localhost:8888",
+                            connection: "close"
+                        },
+                        httpRequestMethod: "GET",
+                        key: SECRETS["someId"],
+                        keyId: "someId",
+                        path: "/somewhere",
+                        queryString: null
+                    }
+                );
+                const params =
+                {
+                    headers:
+                    {
+                        host: "localhost:8888",
+                        connection: "close",
+                        authorization: signature.authorization,
+                        "x-cap-date": signature["x-cap-date"]
+                    },
+                    httpRequestMethod: "get",
+                    path: "/somewhere",
+                    queryString: null,
+                    secret: (keyId, callback) => callback(undefined, SECRETS[keyId])
+                };
+                cap1HmacSha512.verify(params, (error, authorized) =>
+                    {
+                        expect(error).toBe(undefined);
+                        expect(authorized).toBe(true);
+                        done()
+                    }
+                );
+            }
+        );
     });
 });

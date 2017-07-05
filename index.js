@@ -184,7 +184,7 @@ const sign = (
     const canonicalUri = encodeURIComponent(_path.normalize(decodeURIComponent(path)));
     const canonicalRequest =
     [
-        httpRequestMethod,
+        httpRequestMethod.toUpperCase(),
         canonicalUri,
         canonicalQueryString,
         canonicalHeaders,
