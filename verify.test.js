@@ -15,7 +15,7 @@ const VALID_PARAMS =
     {
         host: "localhost:8888",
         connection: "close",
-        authorization: "CAP1-HMAC-SHA512 Credential=someId/20170702/localhost:8888/cap1_request,SignedHeaders=connection;host;x-cap-date,Signature=lEV0szOupNaXRoZPsGYziaF-liIIwA0lIyCHJCK9AxYD7fXaSAlEABgKhZOA4cw2polyV0HujGiZVU6TdQcGAQ",
+        authorization: "CAP1-HMAC-SHA512 Credential=someId/20170702/localhost:8888/cap1_request,SignedHeaders=host;x-cap-date,Signature=zfJvsTapbKxdvWMCbRFbkqO99b6dtgS81ym4O7k9I3R_m31mmUy9qcv_0qnrVKVbGhVkADX5xTLEedi_pzfEZw",
         "x-cap-date": "20170702T204657Z"
     },
     httpRequestMethod: "GET",

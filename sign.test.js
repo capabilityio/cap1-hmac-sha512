@@ -119,4 +119,22 @@ describe("cap1HmacSha512.signature", () =>
             expect(cap1HmacSha512.sign(params)).toEqual(cap1HmacSha512.sign(params2));
         }
     );
+
+    it(`does not sign hop-by-hop headers`, () =>
+        {
+            const params = clone(VALID_PARAMS);
+            params.headers["x-cap-date"] = "20170701T221547Z";
+            const params2 = clone(params);
+            [
+                "Connection", "Keep-Alive", "Proxy-Authenticate", "Proxy-Authorization",
+                "TE", "Trailer", "Transfer-Encoding", "Upgrade"
+            ]
+            .map(hbhHeader =>
+                {
+                    params2.headers[hbhHeader] = "something";
+                }
+            );
+            expect(cap1HmacSha512.sign(params)).toEqual(cap1HmacSha512.sign(params2));
+        }
+    );
 });

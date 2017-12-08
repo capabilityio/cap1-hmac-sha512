@@ -64,6 +64,18 @@ const createStringToSign = ({ algorithm, isoDateBasic, credentialScope, canonica
 
 const hmac = (key, stringToSign, format) => crypto.createHmac("sha512", key).update(stringToSign).digest(format);
 
+const hopByHopHeader =
+{
+    connection: true,
+    "keep-alive": true,
+    "proxy-authenticate": true,
+    "proxy-authorization": true,
+    te: true,
+    trailer: true,
+    "transfer-encoding": true,
+    upgrade: true
+};
+
 const parseKeyId = authorization =>
 {
     if (!authorization)
@@ -145,23 +157,32 @@ const sign = (
 ) =>
 {
     // local copy of headers so we don't mutate ones in params
-    headers = Object.assign({}, headers);
-
     let capDateHeaderValue, host;
-    Object.keys(headers)
-        .map(header =>
+    headers = Object.entries(headers)
+        .map(([name, value]) =>
             {
-                switch (header.toLowerCase())
+                switch (name.toLowerCase())
                 {
                     case "host":
-                        host = headers[header];
+                        host = value;
                         break;
                     case "x-cap-date":
-                        const date = headers[header];
+                        const date = value;
                         capDateHeaderValue = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}T${date.slice(9,11)}:${date.slice(11,13)}:${date.slice(13,15)}Z`;
                         break;
                 }
+                return [name, value];
             }
+        )
+        .reduce((headers, [name, value]) =>
+            {
+                if (!hopByHopHeader[name.toLowerCase()])
+                {
+                    headers[name] = value;
+                }
+                return headers;
+            },
+            {}
         );
 
     if (!host)
