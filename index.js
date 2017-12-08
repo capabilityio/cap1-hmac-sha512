@@ -93,6 +93,21 @@ const parseKeyId = authorization =>
     return parts[0];
 };
 
+const parseSignedHeaders = authorization =>
+{
+    if (!authorization)
+    {
+        return [];
+    }
+    const match = authorization.match(/SignedHeaders=(.+),Signature/);
+    if (!match)
+    {
+        return [];
+    }
+    let headers = match[1].split(";");
+    return headers;
+};
+
 const toUrlSafeBase64 = base64 => base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
 const trimall = (string = "") => (
@@ -245,22 +260,41 @@ const verify = (
         throw new Error("secret is not a function");
     }
 
-    let authorization, authorizationHeaderCaseSensitive, capDateHeaderValue;
-    Object.keys(headers)
-        .map(header =>
+    let authorization, signedHeaders, capDateHeaderValue;
+    // local copy of headers for signature
+    headers = Object.entries(headers)
+        .map(([name, value]) =>
             {
-                switch (header.toLowerCase())
+                switch (name.toLowerCase())
                 {
                     case "authorization":
-                        authorization = headers[header];
-                        authorizationHeaderCaseSensitive = header;
+                        authorization = value;
+                        signedHeaders = parseSignedHeaders(value)
+                            .reduce((headers, header) =>
+                                {
+                                    headers[header] = true;
+                                    return headers;
+                                },
+                                {}
+                            );
                         break;
                     case "x-cap-date":
-                        const date = headers[header];
+                        const date = value;
                         capDateHeaderValue = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}T${date.slice(9,11)}:${date.slice(11,13)}:${date.slice(13,15)}Z`;
                         break;
                 }
+                return [name, value];
             }
+        )
+        .reduce((headers, [name, value]) =>
+            {
+                if (signedHeaders[name.toLowerCase()])
+                {
+                    headers[name] = value;
+                }
+                return headers;
+            },
+            {}
         );
 
     if (!capDateHeaderValue)
@@ -279,10 +313,6 @@ const verify = (
     {
         return callback(undefined, false);
     }
-
-    // local copy of headers for signature
-    headers = Object.assign({}, headers);
-    delete headers[authorizationHeaderCaseSensitive];
 
     secret(keyId, (error, key) =>
         {
