@@ -213,10 +213,6 @@ const sign = (
         }
     );
     const canonicalQueryString = createCanonicalQueryString(queryString);
-    if (typeof canonicalQueryString == "object") // error
-    {
-        return callback(new Error(canonicalQueryString.message));
-    }
     const canonicalUri = encodeURIComponent(_path.normalize(decodeURIComponent(path)));
     const canonicalRequest =
     [
@@ -250,7 +246,7 @@ const sign = (
 
     const signature = toUrlSafeBase64(hmac(kSigning, stringToSign, "base64"));
 
-    const authorization = `${ALGORITHM} Credential=${credential},SignedHeaders=${signedHeaders},Signature=${signature}`
+    const authorization = `${ALGORITHM} Credential=${credential},SignedHeaders=${signedHeaders},Signature=${signature}`;
 
     return (
         {

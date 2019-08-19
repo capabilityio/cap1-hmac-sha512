@@ -6,15 +6,16 @@
         "assert-latest-node": "(node -v | grep -q ${npm_package_scriptvars_latest_node}) || (echo \"Expected node version ${npm_package_scriptvars_latest_node}, got $(node -v)\" && exit 1)",
         "demo": "node examples/demo.js",
         "inject-examples": "node scripts/injectExamples.js",
+        "preinstall": "rm -f package-lock.json",
         "test": "npm run assert-latest-node && jest"
     },
     "scriptvars": {
-        "latest_node": "v9.4.0"
+        "latest_node": "v12.8.1"
     },
     "main": "index.js",
     "devDependencies": {
-        "clone": "2.1.1",
-        "jest": "22.1.4"
+        "clone": "2.1.2",
+        "jest": "24.9.0"
     },
     "contributors": [
         "Tristan Slominski <tristan.slominski@gmail.com>"
